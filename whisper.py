@@ -9,25 +9,24 @@ import json
 
 
 def main():
-    # activate whipser virtual environment
-    venv = "/srv/scratch/yingfeng/whisper/.venv/bin/activate"
-    
     # go to the tests directory
     tests_dir = "/srv/scratch/yingfeng/tests"
     os.chdir(tests_dir)
-    logging.info(f"Changed working directory to: {os.getcwd()}")
-    
+
+    # config logging    
     logging.basicConfig(
         level = logging.INFO,
-        format = '%(asctime)s - %(levelname)s - %(name)s - %(message)s',
-        filename = 'log/whisper.log',
-        filemode = 'a')
-    
+        format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+        filename = "log/whisper.log",
+        filemode = "a")
+        
     # set up whisper command
     engine = "whisper"
     models = ["turbo", "large-v3", "large-v2", "medium", "medium.en", "small.en", "base.en", "tiny.en"]
     barcodes = ["40000003402619", "40000003189265", "40000003403856"];   
     lang_param = f"--language en"
+    activate_venv = "source ../whisper/.venv/bin/activate"
+    command = f"{activate_venv}; {engine} {lang_param}"
     # TODO vary performance-impact parameters 
     # params = []
     
@@ -48,7 +47,7 @@ def main():
             audio = f"/N/esquilax/srv/storage/mdpi_research/wsjv/MDPI_{barcode}_01_high.mp4"
                          
             # command line for running whisper
-            command = ["whisper", model_param, lang_paran, output_param, audio]
+            command += f" {model_paramn} {output_param} audio"
             
             # Record the start time
             start_time = time.perf_counter()
@@ -59,7 +58,7 @@ def main():
                 # Run the command and capture its output
                 # `capture_output=True` redirects stdout and stderr to the result object
                 # `text=True` decodes the output as text
-                result = subprocess.run(command, capture_output=True, text=True, check=True)
+                process = subprocess.run(command, shell=True, capture_output=True, text=True, check=True)
             
                 # TODO record memory usage
             
@@ -74,11 +73,11 @@ def main():
                 logging.info(f"Total execution time: {total_time:.4f} seconds, CPU time used: {cpu_time:.4f} seconds")
                 
                 # Print the command's output
-                logging.debug(f"Command output: {result.stdout}")
+                logging.debug(f"Command output: {process.stdout}")
             
                 # Print errors if any; otherwise save performance info into file
-                if result.stderr:
-                    logging.error(f"Command errors: \n{result.stderr}")             
+                if process.stderr:
+                    logging.error(f"Command errors: \n{process.stderr}")             
                 else:            
                     pfm_info = {
                         "total_time": total_time, 
