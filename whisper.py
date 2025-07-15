@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 # Run whisper transcribe on a predefined set of language models and audio files and save relevant performance information along with transcript results.
 
 import os
@@ -15,10 +15,12 @@ def main():
 
     # config logging    
     logging.basicConfig(
-        level = logging.INFO,
-        format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s",
         filename = "log/whisper.log",
-        filemode = "a")
+        filemode = "a"
+        level = logging.INFO,
+        format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+    )
+    logging.info(f"Changed working directory to: {os.getcwd()}")
         
     # set up whisper command
     engine = "whisper"
@@ -26,8 +28,8 @@ def main():
     barcodes = ["40000003402619", "40000003189265", "40000003403856"];   
     lang_param = f"--language en"
     activate_venv = "source ../whisper/.venv/bin/activate"
-    command = f"{activate_venv}; {engine} {lang_param}"
-    # TODO vary performance-impact parameters 
+    cmd = f"{activate_venv}; {engine} {lang_param}"
+    # TODO vary performance-impacting parameters 
     # params = []
     
     # run whisper: loop through models
@@ -47,12 +49,13 @@ def main():
             audio = f"/N/esquilax/srv/storage/mdpi_research/wsjv/MDPI_{barcode}_01_high.mp4"
                          
             # command line for running whisper
-            command += f" {model_paramn} {output_param} audio"
+            command = f"{cmd} {model_param} {output_param} {audio}"
             
             # Record the start time
             start_time = time.perf_counter()
+            # TODO for GPU, external lib is needed to record processor and memory usage
             start_time_cpu = time.process_time()
-            logging.info(f"Starting command: {command}, \n\t start_time: {start_time}, start_time_cpu: {start_time_cpu}")
+            logging.info(f"Starting command: {command} \n\t start_time: {start_time}, start_time_cpu: {start_time_cpu}")
         
             try:
                 # Run the command and capture its output
@@ -65,7 +68,7 @@ def main():
                 # Record the end time
                 end_time = time.perf_counter()
                 end_time_cpu = time.process_time()
-                logging.info(f"Completed command: {command}, \n\t end_time: {end_time}, end_time_cpu: {end_time_cpu}")
+                logging.info(f"Completed command: {command} \n\t end_time: {end_time}, end_time_cpu: {end_time_cpu}")
             
                 # Calculate the elapsed time
                 total_time = end_time - start_time
@@ -77,7 +80,7 @@ def main():
             
                 # Print errors if any; otherwise save performance info into file
                 if process.stderr:
-                    logging.error(f"Command errors: \n{process.stderr}")             
+                    logging.error(f"Command errors: {process.stderr}")             
                 else:            
                     pfm_info = {
                         "total_time": total_time, 
