@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # Run whisper transcribe on a predefined set of language models and audio files and save relevant performance information along with transcript results.
 
 import os
@@ -43,7 +43,7 @@ def main():
             # if the corresponding performance file exists, skip this model-file, as it has been run
             pfm_file = f"{output_dir}/{barcode}.pfm.json"
             if os.path.exists(pfm_file):
-                logging.info("Transcript with performance file {pfm_file} has been generated, skip this one.")
+                logging.info(f"Transcript with performance file {pfm_file} has been generated, no need to rerun on this one.")
                 continue
 
             # audio file to transcribe
