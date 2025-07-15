@@ -16,7 +16,7 @@ def main():
     # config logging    
     logging.basicConfig(
         filename = "log/whisper.log",
-        filemode = "a"
+        filemode = "a",
         level = logging.INFO,
         format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
     )
@@ -43,6 +43,7 @@ def main():
             # if the corresponding performance file exists, skip this model-file, as it has been run
             pfm_file = f"{output_dir}/{barcode}.pfm.json"
             if os.path.exists(pfm_file):
+                logging.info("Transcript with performance file {pfm_file} has been generated, skip this one.")
                 continue
 
             # audio file to transcribe
@@ -52,8 +53,8 @@ def main():
             command = f"{cmd} {model_param} {output_param} {audio}"
             
             # Record the start time
-            start_time = time.perf_counter()
             # TODO for GPU, external lib is needed to record processor and memory usage
+            start_time = time.perf_counter()
             start_time_cpu = time.process_time()
             logging.info(f"Starting command: {command} \n\t start_time: {start_time}, start_time_cpu: {start_time_cpu}")
         
@@ -62,9 +63,7 @@ def main():
                 # `capture_output=True` redirects stdout and stderr to the result object
                 # `text=True` decodes the output as text
                 process = subprocess.run(command, shell=True, capture_output=True, text=True, check=True)
-            
-                # TODO record memory usage
-            
+                        
                 # Record the end time
                 end_time = time.perf_counter()
                 end_time_cpu = time.process_time()
@@ -88,12 +87,13 @@ def main():
                     }           
                     with open(pfm_file, 'w') as file:
                         json.dump(pfm_info, file) 
+                    logging.info("Saved performance info into {pfm_file}.")
             except subprocess.CalledProcessError as e:
                 # Handle errors if the command returns a non-zero exit code
                 logging.error(f"Command failed to execute with exception: {e}")
                 logging.error(f"Stderr: {e.stderr}")
             except FileNotFoundError as e:
-                logging.error(f"Error: Command '{command[0]}' not found: {e}.")
+                logging.error(f"Error: Command '{command}' not found: {e}.")
             except IOError as e:
                 logging.error(f"Failed to write performance info into file {pfm_file}: {e}")
         
