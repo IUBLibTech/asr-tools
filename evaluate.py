@@ -36,7 +36,7 @@ def main():
         output_csv = f"evaluation/{barcode}.csv"        
         groundtruth = f"groundtruth/{barcode}.json"        
         command_html = f"../CompareTranscripts/bin/compare_transcripts --full-names --output {output_html} {groundtruth}"
-        command_csv = f"../CompareTranscripts/bin/compare_transcripts --output {output_csv} {groundtruth}"
+        command_csv = f"../CompareTranscripts/bin/compare_transcripts --full-names --output {output_csv} {groundtruth}"
         perform_csv = f"evaluation/{barcode}.pfm.csv"
         transcript_exists = False
         
