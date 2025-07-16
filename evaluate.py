@@ -28,10 +28,10 @@ def main():
     
     # initialize performance csv 
     title_row = ["Engine", "Model", "Total Time", "CPU Time"]
-    rows = [title_row]
 
     # run comparison and generate performance csv for each file
     for barcode in barcodes:
+        rows = [title_row]
         output_html = f"evaluation/{barcode}.html"
         output_csv = f"evaluation/{barcode}.csv"        
         groundtruth = f"groundtruth/{barcode}.json"        
